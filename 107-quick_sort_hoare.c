@@ -1,101 +1,73 @@
 #include "sort.h"
 #include <stdio.h>
-
 /**
- * swap - swap integers at positions `i` and `j` in `array`
- * @array: array to swap positions
- * @i: left index
- * @j: right index
- */
-void swap(int *array, int i, int j)
+*swap - the positions of two elements into an array
+*@array: array
+*@item1: array element
+*@item2: array element
+*/
+void swap(int *array, ssize_t item1, ssize_t item2)
 {
 	int tmp;
 
-	tmp = array[i];
-	array[i] = array[j];
-	array[j] = tmp;
+	tmp = array[item1];
+	array[item1] = array[item2];
+	array[item2] = tmp;
 }
-
 /**
- * partition - partition subarray of `array` around pivot using
- * Hoare method (always choose right element).
- * @array: array to partition
- * @left: left end of subarray
- * @right: right end of subarray
- * @size: size of array
- * Return: index of pivot after it has been sorted
+ *hoare_partition - hoare partition sorting scheme implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: size array
+ *Return: return the position of the last element sorted
  */
-int partition(int *array, int left, int right, size_t size)
+int hoare_partition(int *array, int first, int last, int size)
 {
-	int i, j, pivot;
+	int current = first - 1, finder = last + 1;
+	int pivot = array[last];
 
-	if (left >= right)
-		return (left);
-	swap(array, left, right);
-	print_array(array, size);
-	pivot = array[left];
-	i = left;
-	j = right + 1;
 	while (1)
 	{
-		do {
-			i++;
-		} while (array[i] <= pivot && i < right);
 
 		do {
-			j--;
-		} while (array[j] > pivot && j > i);
-
-		if (i == j)
-		{
-			swap(array, i - 1, left);
-			print_array(array, size);
-			return (i - 1);
-		}
-		if (i == right && pivot < array[right])
-		{
-			swap(array, left, right - 1);
-			print_array(array, size);
-			return (right - 1);
-		}
-		if (i == right && pivot > array[right])
-		{
-			swap(array, left, right);
-			print_array(array, size);
-			return (right);
-		}
-		swap(array, i, j);
+			current++;
+		} while (array[current] < pivot);
+		do {
+			finder--;
+		} while (array[finder] > pivot);
+		if (current >= finder)
+			return (current);
+		swap(array, current, finder);
 		print_array(array, size);
 	}
 }
-
 /**
- * _quick_sort_hoare - recursively partition array until it is fully sorted
- * @array: array to sort
- * @left: left side of subarray for recursion
- * @right: right side of subarray for recursion
- * @size: size of array
+ *qs - qucksort algorithm implementation
+ *@array: array
+ *@first: first array element
+ *@last: last array element
+ *@size: array size
  */
-void _quick_sort_hoare(int *array, int left, int right, size_t size)
+void qs(int *array, ssize_t first, ssize_t last, int size)
 {
-	int p;
+	ssize_t position = 0;
 
-	if (left < right)
+	if (first < last)
 	{
-		p = partition(array, left, right, size);
-		_quick_sort_hoare(array, left, p - 1, size);
-		_quick_sort_hoare(array, p + 1, right, size);
+		position = hoare_partition(array, first, last, size);
+		qs(array, first, position - 1, size);
+		qs(array, position, last, size);
 	}
 }
-
 /**
- * quick_sort_hoare - wrapper around recursive quicksort function
- * @array: array to sort
- * @size: size of array
+ *quick_sort_hoare - prepare the terrain to quicksort algorithm
+ *@array: array
+ *@size: array size
  */
 void quick_sort_hoare(int *array, size_t size)
 {
-	if (array == NULL || size < 2)
+	if (!array || size < 2)
 		return;
-	_quick_sort_hoare(array, 0, (int)(size - 1), size);
+	qs(array, 0, size - 1, size);
 }
